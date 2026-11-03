@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "byte_town_web",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["web/server.py"],
+      "port": 8000
+    }
+  ]
+}

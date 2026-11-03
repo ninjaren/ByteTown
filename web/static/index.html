@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Byte Town 控制面板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12141d;
+    --bg-deep: #0c0d13;
+    --card: #1a1d2b;
+    --card-hi: #1f2333;
+    --border: #2c3047;
+    --text: #edeff6;
+    --muted: #8d93ad;
+    --muted-2: #636984;
+    --amber: #e3a23f;
+    --amber-dim: #5a4423;
+    --ok: #6fcf97;
+    --ok-dim: #223a2c;
+    --busy: #e3a23f;
+    --busy-dim: #4a3a1c;
+    --err: #ef6461;
+    --err-dim: #442226;
+    --link: #8fa8ef;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    margin: 0;
+    font-family: "Work Sans", "Microsoft JhengHei", "PingFang TC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  a, button, [tabindex] { outline-offset: 2px; }
+  a:focus-visible, button:focus-visible, select:focus-visible,
+  textarea:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--amber);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    padding: 40px 28px 28px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-inner {
+    position: relative;
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(24px, 3vw, 30px);
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .sub { color: var(--muted); font-size: 14px; margin: 0; }
+
+  /* ---------- layout ---------- */
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 28px 60px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 34px;
+  }
+
+  /* ---------- agent card ---------- */
+  .card {
+    position: relative;
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px 6px 16px 6px;
+    padding: 16px 16px 16px 14px;
+    transition: border-color 160ms ease, transform 160ms ease;
+  }
+  .card:hover { border-color: #3a3f5c; }
+  .lamp {
+    flex: none;
+    width: 5px;
+    border-radius: 3px;
+    margin-right: 14px;
+    background: var(--muted-2);
+    box-shadow: none;
+  }
+  .card[data-state="idle"] .lamp { background: var(--ok); box-shadow: 0 0 10px -2px var(--ok); }
+  .card[data-state="running"] .lamp { background: var(--busy); box-shadow: 0 0 14px -1px var(--busy); animation: flicker 1.8s ease-in-out infinite; }
+  .card[data-state="error"] .lamp { background: var(--err); box-shadow: 0 0 12px -2px var(--err); }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card[data-state="running"] .lamp { animation: none; }
+  }
+
+  .card-body { flex: 1; min-width: 0; }
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .icon {
+    flex: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--card-hi);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .icon svg { width: 16px; height: 16px; }
+  .titles { flex: 1; min-width: 0; }
+  .name {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 17px;
+    display: block;
+    line-height: 1.2;
+  }
+  .role { font-size: 12px; color: var(--muted); display: block; margin-top: 1px; }
+  .status {
+    flex: none;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+  .status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted-2); }
+  .card[data-state="idle"] .status .dot { background: var(--ok); }
+  .card[data-state="idle"] .status { color: var(--ok); }
+  .card[data-state="running"] .status .dot { background: var(--busy); }
+  .card[data-state="running"] .status { color: var(--busy); }
+  .card[data-state="error"] .status .dot { background: var(--err); }
+  .card[data-state="error"] .status { color: var(--err); }
+
+  .field { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .field b { color: var(--text); font-weight: 500; }
+  .answer {
+    color: var(--text);
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 8px;
+    white-space: pre-wrap;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  details { margin-top: 8px; }
+  summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--link);
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸ "; display: inline-block; transition: transform 140ms ease; }
+  details[open] summary::before { transform: rotate(90deg); }
+  pre.log {
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+    font-size: 11.5px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 6px;
+    color: var(--muted);
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 13px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+  .stop-btn { background: var(--err-dim); color: #ffc6c4; margin-top: 10px; border: 1px solid #5c2b2e; }
+  .stop-btn:hover { background: var(--err); color: #2a0e0e; }
+
+  /* ---------- dispatch panel ---------- */
+  .dispatch {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px 6px 16px 6px;
+    padding: 22px 22px 24px;
+    max-width: 640px;
+  }
+  .dispatch h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 4px;
+  }
+  .dispatch .hint { font-size: 12.5px; color: var(--muted); margin: 0 0 16px; }
+  select, textarea {
+    width: 100%;
+    background: var(--bg-deep);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    font-family: inherit;
+  }
+  textarea { min-height: 76px; resize: vertical; }
+  .submit-btn {
+    background: var(--amber);
+    color: #241704;
+    width: 100%;
+    padding: 11px;
+    font-size: 13.5px;
+    border-radius: 8px;
+  }
+  .submit-btn:hover { background: #edb359; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  #toast {
+    position: fixed; bottom: 22px; right: 22px;
+    background: var(--card-hi); border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 16px; border-radius: 10px 4px 10px 4px; font-size: 13px;
+    box-shadow: 0 8px 24px -8px #000a;
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .hero { padding: 40px 18px 20px; }
+    main { padding: 20px 18px 40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-inner">
+      <h1>Byte Town 控制面板</h1>
+      <p class="sub" id="subLine">即時查看鎮上 agent 的狀態，或直接從這裡發送任務</p>
+    </div>
+  </div>
+
+  <main>
+    <div class="grid" id="grid"></div>
+
+    <div class="dispatch">
+      <h2>發送新任務</h2>
+      <p class="hint">選一位 agent，寫下你要委託的工作</p>
+      <select id="agentSelect"></select>
+      <textarea id="taskInput" placeholder="輸入任務內容，例如：幫我查一下台積電(2330)目前股價"></textarea>
+      <button class="submit-btn" id="submitBtn" onclick="submitTask()">送出</button>
+    </div>
+  </main>
+
+  <div id="toast" role="status"></div>
+
+<script>
+let AGENTS = [];
+// 記錄每張卡片「回答」「log」兩個 <details> 的展開狀態，key 是 agent id；
+// 因為每 2 秒整個 grid 的 innerHTML 都會重建，不存狀態的話使用者展開看沒兩秒就被重建蓋回去
+const openState = { answer: {}, log: {} };
+
+// 每個 agent 一個小線稿圖示，純裝飾用，讓鎮民各有辨識度
+const ICONS = {
+  pip:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 5h12l-3 3.5L17 12H5"/></svg>',
+  scout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M15 9l-2 6-6 2 2-6z"/></svg>',
+  owl:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-3 2-5 5-5 9a5 5 0 0010 0c0-4-2-7-5-9z"/><circle cx="9.6" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>',
+  bolt:  '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>',
+  quill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-6 1-11 5-13 11l-2 5 5-2C16 16 20 11 21 5z"/><path d="M8 15l-3 3"/></svg>',
+  ash:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2 3-1 4-1 7a3 3 0 006 0c0-2-1-3-1-5 3 2 4 5 4 8a7 7 0 11-14 0c0-4 2-7 6-10z"/></svg>',
+  moss:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-9 5-14 14-14-1 9-6 14-14 14z"/><path d="M4 20c3-4 7-7 12-9"/></svg>',
+};
+
+function splitLabel(label) {
+  const m = /^(.*?)（(.*)）\s*$/.exec(label || "");
+  return m ? { name: m[1], role: m[2] } : { name: label || "", role: "" };
+}
+
+async function loadAgentOptions() {
+  const res = await fetch("/api/status");
+  const list = await res.json();
+  AGENTS = list;
+  const select = document.getElementById("agentSelect");
+  if (select.options.length === 0) {
+    select.innerHTML = list.map(a => `<option value="${a.id}">${a.label}</option>`).join("");
+  }
+  const sub = document.getElementById("subLine");
+  if (sub) sub.textContent = `即時查看鎮上 ${list.length} 位 agent 的狀態，或直接從這裡發送任務`;
+  return list;
+}
+
+function escapeHtml(s) {
+  if (!s) return "";
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function renderGrid(list) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = list.map(a => {
+    let state = "idle", statusText = "閒置";
+    if (a.running) { state = "running"; statusText = "執行中"; }
+    else if (a.returncode !== null && a.returncode !== undefined && a.returncode !== 0) {
+      state = "error"; statusText = "上次執行失敗";
+    }
+    const { name, role } = splitLabel(a.label);
+    const taskLine = a.running
+      ? `<div class="field"><b>目前任務：</b>${escapeHtml(a.current_task)}</div>`
+      : "";
+    const lastSession = a.last_session;
+    const lastLine = lastSession
+      ? `<div class="field"><b>最近任務：</b>${escapeHtml(lastSession.task)}</div>
+         <div class="field"><b>時間：</b>${escapeHtml(lastSession.created_at)}</div>`
+      : `<div class="field">尚無歷史紀錄</div>`;
+    const answerOpen = openState.answer[a.id] ? "open" : "";
+    const answerPreview = a.last_answer
+      ? a.last_answer.slice(0, 24) + (a.last_answer.length > 24 ? "…" : "")
+      : "";
+    const answerLine = (!a.running && a.last_answer)
+      ? `<details ${answerOpen} ontoggle="openState.answer['${a.id}']=this.open">
+           <summary>回答：${escapeHtml(answerPreview)}</summary>
+           <div class="answer">${escapeHtml(a.last_answer)}</div>
+         </details>`
+      : "";
+    const logOpen = openState.log[a.id] ? "open" : "";
+    const logBlock = a.log_tail
+      ? `<details ${logOpen} ontoggle="openState.log['${a.id}']=this.open">
+           <summary>查看執行 log</summary>
+           <pre class="log">${escapeHtml(a.log_tail)}</pre>
+         </details>`
+      : "";
+    const stopBtn = a.running
+      ? `<button class="stop-btn" onclick="stopAgent('${a.id}')">停止</button>`
+      : "";
+    const icon = ICONS[a.id] || "";
+    return `
+      <div class="card" data-state="${state}">
+        <div class="lamp"></div>
+        <div class="card-body">
+          <div class="card-head">
+            <span class="icon">${icon}</span>
+            <div class="titles">
+              <span class="name">${escapeHtml(name)}</span>
+              <span class="role">${escapeHtml(role)}</span>
+            </div>
+            <span class="status"><i class="dot"></i>${statusText}</span>
+          </div>
+          ${taskLine}
+          ${lastLine}
+          ${answerLine}
+          ${logBlock}
+          ${stopBtn}
+        </div>
+      </div>`;
+  }).join("");
+}
+
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 3500);
+}
+
+async function submitTask() {
+  const agentId = document.getElementById("agentSelect").value;
+  const task = document.getElementById("taskInput").value.trim();
+  if (!task) { showToast("請輸入任務內容"); return; }
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  try {
+    const res = await fetch("/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ agent_id: agentId, task }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast("送出失敗：" + (data.detail || res.status));
+    } else {
+      showToast("已送出，開始執行");
+      document.getElementById("taskInput").value = "";
+      refresh();
+    }
+  } catch (e) {
+    showToast("連線失敗：" + e);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function stopAgent(agentId) {
+  try {
+    const res = await fetch(`/api/stop/${agentId}`, { method: "POST" });
+    const data = await res.json();
+    if (!res.ok) showToast("停止失敗：" + (data.detail || res.status));
+    else showToast("已送出停止請求");
+    refresh();
+  } catch (e) {
+    showToast("連線失敗：" + e);
+  }
+}
+
+async function refresh() {
+  try {
+    const list = await loadAgentOptions();
+    renderGrid(list);
+  } catch (e) {
+    showToast("讀取狀態失敗：" + e);
+  }
+}
+
+refresh();
+setInterval(refresh, 2000);
+</script>
+</body>
+</html>

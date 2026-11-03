@@ -1,0 +1,17 @@
+name: pdf_digest
+description: 讀取並摘要 PDF 文件內容，依文件長度選擇一次讀完或分頁讀取
+trigger_keywords:
+  - PDF
+  - 電子書
+  - 文件摘要
+  - 報告書
+prompt_template: |
+  你是研究者 Scout，需要處理這個任務：「{task}」（任務描述中應包含 PDF 的檔案路徑）。
+  1. 先用 read_pdf 嘗試一次讀取全文
+  2. 若內容過長導致無法完整處理，改用 read_pdf_page 依頁數範圍分批讀取
+  3. 若使用者只需要其中一部分，可用 split_pdf 切出該範圍另存新檔
+  4. 摘要時標明資訊來自第幾頁，方便回頭查證
+required_tools:
+  - read_pdf
+  - read_pdf_page
+  - split_pdf

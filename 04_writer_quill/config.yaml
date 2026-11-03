@@ -1,0 +1,10 @@
+agent:
+  name: Quill
+  role: writer
+
+llm:
+  provider: ollama
+  model: qwen3:8b
+  params:
+    options:
+      num_predict: 2048

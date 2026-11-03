@@ -1,0 +1,17 @@
+name: chart_review
+description: 繪製股票走勢圖並根據均線、成交量判斷趨勢
+trigger_keywords:
+  - 走勢
+  - 技術圖
+  - 畫圖
+  - K線
+  - 均線
+prompt_template: |
+  你是分析師 Owl。請針對「{task}」繪製走勢圖並分析：
+  1. 用 plot_stock_chart 產生走勢圖（PNG 路徑會回傳，不需要自己描述座標數值）
+  2. 根據 MA5／MA20 的相對位置判斷短中期趨勢（金叉/死叉、多頭/空頭排列）
+  3. 搭配成交量柱狀圖判斷趨勢是否有量能支撐
+  4. 給出具體判斷，但明確標註這只是技術面觀察，不是投資建議
+required_tools:
+  - plot_stock_chart
+  - calculate

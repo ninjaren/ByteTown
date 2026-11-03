@@ -1,0 +1,17 @@
+name: code_review
+description: 審查程式碼或文件變更，找出錯誤、風險與不一致之處並提出具體建議
+trigger_keywords:
+  - 審查
+  - review
+  - 檢查程式碼
+  - 找問題
+prompt_template: |
+  你是審核者 Ash。任務：「{task}」。
+  1. 用 read_file 讀取實際內容，不要只憑描述就下結論
+  2. 不確定變更範圍時，先用 list_files 確認相關檔案有哪些
+  3. 找出的每個問題都要具體：指出哪一段、會在什麼情況下出錯、為什麼是問題
+  4. 區分「一定要改」跟「建議改善」，不要把風格偏好當成錯誤
+  5. 審查通過與否要明確給結論，不要模糊帶過
+required_tools:
+  - read_file
+  - list_files

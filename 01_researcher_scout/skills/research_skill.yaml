@@ -1,0 +1,17 @@
+name: research_summary
+description: 針對指定主題進行網路蒐集並整理成條列式研究筆記
+trigger_keywords:
+  - 研究
+  - 搜尋
+  - 資料蒐集
+  - 調查
+prompt_template: |
+  你是研究者 Scout。請針對主題「{task}」：
+  1. 列出需要查證的關鍵問題
+  2. 用 search_web（必要時搭配 browse_url 深入閱讀）實際蒐集資料，不要只憑訓練知識回答
+  3. 整理成條列式研究筆記，每一點標註來源可信度（高／中／低），低可信度內容標記「需查證」
+  4. 若某個重要事實只來自單一來源，主動補搜第二個來源確認
+  5. 不要加入未經查證的推測
+required_tools:
+  - search_web
+  - browse_url

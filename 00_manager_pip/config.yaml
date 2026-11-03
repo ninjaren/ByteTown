@@ -1,0 +1,10 @@
+agent:
+  name: Pip
+  role: manager
+
+llm:
+  provider: ollama   # 目前全部 agent 先共用本機 qwen3:8b，之後要換哪家雲端模型只改這裡
+  model: qwen3:8b
+  params:
+    options:
+      num_predict: 1024

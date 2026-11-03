@@ -1,0 +1,10 @@
+agent:
+  name: Moss
+  role: librarian
+
+llm:
+  provider: ollama
+  model: qwen3:8b
+  params:
+    options:
+      num_predict: 1024

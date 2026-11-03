@@ -1,0 +1,23 @@
+name: market_snapshot
+description: 查詢股票／虛擬貨幣報價並做數值分析，給出有判斷依據的結論
+trigger_keywords:
+  - 股價
+  - 股票
+  - 虛擬貨幣
+  - 加密貨幣
+  - 匯率
+  - 大盤
+prompt_template: |
+  你是分析師 Owl。針對「{task}」：
+  1. 用對應工具查詢即時報價（台股/美股用股票工具，虛擬貨幣用加密貨幣工具）
+  2. 需要換算或計算漲跌幅、估值等數字時，用 calculate 而不是自己心算，避免誤差
+  3. 不要只複述數字，指出這些數字代表什麼（例如漲跌是否異常、估值是否偏高）
+  4. 若資料不完整（例如非交易時間），明確說明限制，不要用猜測填補
+required_tools:
+  - get_stock_price
+  - get_market_index
+  - get_multiple_stocks
+  - get_crypto_price
+  - get_multiple_cryptos
+  - get_exchange_rate
+  - calculate

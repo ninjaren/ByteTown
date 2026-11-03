@@ -1,0 +1,21 @@
+anthropic>=0.40.0
+openai>=1.50.0
+requests>=2.31.0
+PyYAML>=6.0
+python-dotenv>=1.0.0
+
+# common/tools/builtin（從 ZuZu 移植過來的共用工具）需要的套件
+matplotlib>=3.8.0       # plot_stock_chart
+pypdf>=4.0.0            # read_pdf / read_pdf_page / split_pdf
+beautifulsoup4>=4.12.0  # get_github_trending
+ddgs>=5.0.0             # search_web
+pyperclip>=1.11.0       # read_clipboard
+qrcode[pil]>=8.0.0      # create_qr_code
+
+# common/memory（共用的 session 存檔 + 語意記憶）需要的套件
+chromadb>=0.5.0         # VectorMemory 的向量資料庫
+# 語意搜尋的 embedding 模型用 Ollama 本機跑，需先執行：ollama pull nomic-embed-text
+
+# web/server.py（控制面板後端，看每個 agent 狀態、從網頁發送任務）需要的套件
+fastapi>=0.110.0
+uvicorn>=0.29.0

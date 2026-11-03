@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# 環境變數（真正的 key 放這裡，不可提交；參考 .env.example）
+.env
+
+# 執行期間產生的資料：log、session 記憶、向量資料庫、下載的圖表/快取，
+# 程式啟動時都會自動重新建立對應資料夾，不需要進版控
+data/
+
+# 編輯器/系統雜項
+.DS_Store
+*.swp
